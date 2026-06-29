@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #e1c1d1, #ac88c6);
+        font-size: 24px;
+    }
+
+    input {
+        font-size: 24px;
+    }
+
+    .user {
+        width: 500px;
+        height: 600px;
+        border-radius: 40px;
+        background-color: #ac99ce;
+        box-shadow: 3px 3px 5px rgba(201, 185, 202, 0.39);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* 動畫 */
+        position: absolute;
+        bottom: auto;
+    }
+
+    .title-result {
+        width: 400px;
+        height: 250px;
+        background-color: #8663ad;
+        opacity: 0.8;
+        padding-bottom: 20px;
+        border-radius: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); */
+        /* 加入彈性效果 */
+    }
+
+
+
+    .title {
+        padding-bottom: 20px;
+
+
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    .box {
+        font-size: 24px;
+        width: 100px;
+        height: 50px;
+        border: 1px solid black;
+        cursor: pointer;
+        margin: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .box:hover {
+        scale: 1.05;
+    }
+
+    @keyframes thin {
+        0% {
+            margin-bottom: 0;
+        }
+
+        100% {
+            margin-bottom: 20%;
+            opacity: 0.5;
+        }
+    }
+
+    .thin-result {
+        animation: thin 0.5s linear;
+    }
+
+    @keyframes fall-down {
+        0% {
+            margin-top: 0;
+        }
+
+        100% {
+            margin-top: 20%;
+        }
+    }
+
+    @keyframes shake-soft {
+        0% {
+            transform:  rotate(0deg);
+        }
+
+        25% {
+            transform:  rotate(-5deg);
+        }
+
+        50% {
+            transform:  rotate(5deg);
+        }
+
+        75% {
+            transform:  rotate(-2deg);
+        }
+
+        100% {
+            transform:  rotate(0deg);}
+    }
+
+    .shake-animation {
+        animation: fall-down 0.5s linear, shake-soft 0.5s ease-in-out;
+    }
+</style>
+
+<body>
+    <div id="user" class="user">
+        <div class="title-result">
+            <h1>
+                <div class="title">BMI計算機</div>
+            </h1>
+            <p></p>
+            <span id="output" class="result"></span>
+        </div>
+        <p> <input type="text" id="int2" placeholder="請輸入身高"></p>
+        <p><input type="text" id="int1" placeholder="請輸入體重"></p>
+
+        <button class="box">計算</button>
+
+    </div>
+    <script>
+        const box = document.querySelector(".box");
+        const int1 = document.querySelector("#int1");
+        const int2 = document.querySelector("#int2");
+        const output = document.querySelector("#output");
+        const user = document.querySelector("#user");
+
+
+        function calBMI() {
+            user.classList.remove("fall-down", "shake-animation", "thin-result");
+            // 1. 在點擊當下才去讀取輸入框的值
+            const weight = parseFloat(int1.value);      
+            const height = parseFloat(int2.value) / 100;
+            // 2. 進行計算
+            const bmi = weight / (height ** 2);
+            // 檢查數值是否有效，避免顯示 NaN
+            if (!isNaN(bmi) && isFinite(bmi)) {
+                // output.value = bmi.toFixed(2);
+                let status = "";
+
+                if (bmi < 18.5) {
+                    status = "體重過輕";
+                    user.classList.add('thin-result');
+                } else if (bmi < 24) {
+                    status = "健康體重";
+                } else if (bmi < 27) {
+                    status = "過重";
+                } else if (bmi < 30) {
+                    status = "輕度肥胖";
+                } else if (bmi < 35) {
+                    status = "中度肥胖";
+                } else {
+                    status = "重度肥胖";
+                    // 1. 觸發往下摔落
+                    user.classList.add("fall-down");
+                    // 2. 摔落完成後，觸發晃動
+                    setTimeout(() => {
+                        user.classList.add("shake-animation");
+                    }, 500); // 這裡的 500 毫秒要對應 CSS transition 的時間
+                }
+
+                // 最後統一進行輸出
+                output.innerHTML = `您的BMI為 ${bmi.toFixed(2)}<p>${status}</p>`;
+                // output.innerHTML = `您的BMI為 ${bmi.toFixed(2)}<p>輕度過重</p>`;;
+
+            } else {
+                output.innerHTML = ``;;
+                alert("請輸入正確值！")
+            }
+        }
+        box.addEventListener('click', calBMI);
+    </script>
+</body>
+
+</html>
